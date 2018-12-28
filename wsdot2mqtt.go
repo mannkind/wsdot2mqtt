@@ -1,21 +1,19 @@
 package main
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
-	"net/http"
 	"strings"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	mqttExtDI "github.com/mannkind/paho.mqtt.golang.ext/di"
 	mqttExtHA "github.com/mannkind/paho.mqtt.golang.ext/ha"
+	resty "gopkg.in/resty.v1"
 )
 
 const (
-	travelTimeURL       = "http://www.wsdot.wa.gov/Traffic/api/TravelTimes/TravelTimesREST.svc/GetTravelTimeAsJson?AccessCode=%s&TravelTimeID=%s"
+	travelTimeURL       = "http://www.wsdot.wa.gov/Traffic/api/TravelTimes/TravelTimesREST.svc/GetTravelTimeAsJson"
 	sensorTopicTemplate = "%s/%s/state"
 )
 
@@ -105,6 +103,7 @@ func (t *Wsdot2Mqtt) loop() {
 			tt, err := t.lookupTravelTime(travelTimeID)
 			if err != nil {
 				log.Printf("Unable to lookup travel time for TravelTimeID: %s", travelTimeID)
+				continue
 			}
 			t.publishTravelTime(tt, travelTimeSlug)
 		}
@@ -114,16 +113,21 @@ func (t *Wsdot2Mqtt) loop() {
 }
 
 func (t *Wsdot2Mqtt) lookupTravelTime(travelTimeID string) (*travelTimeAPIResponse, error) {
-	url := fmt.Sprintf(travelTimeURL, t.secret, travelTimeID)
-	resp, err := http.Get(url)
-	if err == nil && resp.StatusCode == http.StatusOK {
-		var result travelTimeAPIResponse
-		json.NewDecoder(resp.Body).Decode(&result)
-		return &result, nil
+	resp, err := resty.R().
+		SetHeader("Content-Type", "application/json").
+		SetResult(&travelTimeAPIResponse{}).
+		SetQueryParams(map[string]string{
+			"AccessCode":   t.secret,
+			"TravelTimeID": travelTimeID,
+		}).
+		Get(travelTimeURL)
+
+	if err != nil {
+		log.Print(err)
+		return nil, fmt.Errorf("Unble to lookup the travel time for %s", travelTimeID)
 	}
 
-	log.Print(err)
-	return nil, errors.New("Unble to encode the address")
+	return resp.Result().(*travelTimeAPIResponse), nil
 }
 
 func (t *Wsdot2Mqtt) publishTravelTime(response *travelTimeAPIResponse, travelTimeSlug string) {
@@ -140,20 +144,21 @@ func (t *Wsdot2Mqtt) publishTravelTime(response *travelTimeAPIResponse, travelTi
 
 func (t *Wsdot2Mqtt) publishDiscovery() {
 	for _, travelTimeSlug := range t.travelTimes {
-		sensorSlug := strings.ToLower(travelTimeSlug)
+		sensor := strings.ToLower(travelTimeSlug)
 		mqd := mqttExtHA.MQTTDiscovery{
-			Name:              fmt.Sprintf("%s %s", t.discoveryName, sensorSlug),
-			StateTopic:        fmt.Sprintf(sensorTopicTemplate, t.topicPrefix, sensorSlug),
-			UniqueID:          fmt.Sprintf("%s.%s", t.discoveryName, sensorSlug),
+			DiscoveryPrefix: t.discoveryPrefix,
+			Component:       "sensor",
+			NodeID:          t.discoveryName,
+			ObjectID:        sensor,
+
+			Name:              fmt.Sprintf("%s %s", t.discoveryName, sensor),
+			StateTopic:        fmt.Sprintf(sensorTopicTemplate, t.topicPrefix, sensor),
+			UniqueID:          fmt.Sprintf("%s.%s", t.discoveryName, sensor),
 			Icon:              "mdi:car",
 			UnitOfMeasurement: "min",
 		}
 
-		topic := fmt.Sprintf("%s/%s/%s/%s/config", t.discoveryPrefix, "sensor", t.discoveryName, sensorSlug)
-		payloadBytes, _ := json.Marshal(mqd)
-		payload := string(payloadBytes)
-
-		t.publish(topic, payload)
+		mqd.PublishDiscovery(t.client)
 	}
 }
 
