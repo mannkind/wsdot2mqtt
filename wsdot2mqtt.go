@@ -61,7 +61,8 @@ func NewWsdot2Mqtt(config *Config, mqttFuncWrapper *mqttExtDI.MQTTFuncWrapper) *
 		SetOnConnectHandler(x.onConnect).
 		SetConnectionLostHandler(x.onDisconnect).
 		SetUsername(config.MQTT.Username).
-		SetPassword(config.MQTT.Password)
+		SetPassword(config.MQTT.Password).
+		SetWill(x.availabilityTopic(), "offline", 0, true)
 
 	x.client = mqttFuncWrapper.ClientFunc(opts)
 
@@ -80,21 +81,18 @@ func (t *Wsdot2Mqtt) Run() error {
 
 func (t *Wsdot2Mqtt) onConnect(client mqtt.Client) {
 	log.Print("Connected to MQTT")
-
-	if !client.IsConnected() {
-		log.Print("Subscribe Error: Not Connected (Reloading Config?)")
-		return
-	}
-
-	if t.discovery {
-		t.publishDiscovery()
-	}
+	t.publish(t.availabilityTopic(), "online")
+	t.publishDiscovery()
 
 	go t.loop()
 }
 
 func (t *Wsdot2Mqtt) onDisconnect(client mqtt.Client, err error) {
 	log.Printf("Disconnected from MQTT: %s.", err)
+}
+
+func (t *Wsdot2Mqtt) availabilityTopic() string {
+	return fmt.Sprintf("%s/status", t.topicPrefix)
 }
 
 func (t *Wsdot2Mqtt) loop() {
@@ -143,6 +141,10 @@ func (t *Wsdot2Mqtt) publishTravelTime(response *travelTimeAPIResponse, travelTi
 }
 
 func (t *Wsdot2Mqtt) publishDiscovery() {
+	if !t.discovery {
+		return
+	}
+
 	for _, travelTimeSlug := range t.travelTimes {
 		sensor := strings.ToLower(travelTimeSlug)
 		mqd := mqttExtHA.MQTTDiscovery{
@@ -151,6 +153,7 @@ func (t *Wsdot2Mqtt) publishDiscovery() {
 			NodeID:          t.discoveryName,
 			ObjectID:        sensor,
 
+			AvailabilityTopic: t.availabilityTopic(),
 			Name:              fmt.Sprintf("%s %s", t.discoveryName, sensor),
 			StateTopic:        fmt.Sprintf(sensorTopicTemplate, t.topicPrefix, sensor),
 			UniqueID:          fmt.Sprintf("%s.%s", t.discoveryName, sensor),
