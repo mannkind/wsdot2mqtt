@@ -76,6 +76,8 @@ func (t *Wsdot2Mqtt) Run() error {
 		return token.Error()
 	}
 
+	t.loop()
+
 	return nil
 }
 
@@ -83,8 +85,6 @@ func (t *Wsdot2Mqtt) onConnect(client mqtt.Client) {
 	log.Print("Connected to MQTT")
 	t.publish(t.availabilityTopic(), "online")
 	t.publishDiscovery()
-
-	go t.loop()
 }
 
 func (t *Wsdot2Mqtt) onDisconnect(client mqtt.Client, err error) {
