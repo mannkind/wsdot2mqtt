@@ -5,8 +5,12 @@ github.com/eclipse/paho.mqtt.golang v1.1.1/go.mod h1:H9keYFcgq3Qr5OUJm/JZI/i6U7j
 github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5aqRK0M=
 github.com/google/wire v0.2.0 h1:l8O+yxT6Kx49nR2KzotgPOQpHFcIvpDY0rGzlCZ1wIE=
 github.com/google/wire v0.2.0/go.mod h1:ptBl5bWD3nzmJHVNwYHV3v4wdtKzBMlU2YbtKQCG9GI=
+github.com/google/wire v0.2.1 h1:TYj4Z2qjqxa2ufb34UJqVeO9aznL+i0fLO6TqThKZ7Y=
+github.com/google/wire v0.2.1/go.mod h1:ptBl5bWD3nzmJHVNwYHV3v4wdtKzBMlU2YbtKQCG9GI=
 github.com/mannkind/paho.mqtt.golang.ext v0.1.0 h1:f/P0eiReHI9nOJxfBTM2Nxd5x91BpVNpBIKe5jByJII=
 github.com/mannkind/paho.mqtt.golang.ext v0.1.0/go.mod h1:/3IFyFHyEgDk3raBQrXcxDlNkh7tCji8GdiMJePPZOc=
+github.com/mannkind/paho.mqtt.golang.ext v0.2.0 h1:7Lr5QWj4SdEPmHoTrgh7L+0TCbZZMFcwlkLKAS+977c=
+github.com/mannkind/paho.mqtt.golang.ext v0.2.0/go.mod h1:qZFN1fTim3MhJ7/BxdcFQIbLEYNHeNJj6MryPoe0Hk8=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 golang.org/x/net v0.0.0-20181011144130-49bb7cea24b1/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
