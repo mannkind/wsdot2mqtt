@@ -1,6 +1,6 @@
 package main
 
-type travelTimeAPIResponse struct {
+type travelTime struct {
 	AverageTime int     `json:"AverageTime"`
 	CurrentTime int     `json:"CurrentTime"`
 	Description string  `json:"Description"`

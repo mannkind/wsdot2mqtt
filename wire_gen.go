@@ -12,10 +12,12 @@ import (
 
 // Injectors from wire.go:
 
-func Initialize() *Wsdot2Mqtt {
+func initialize() *bridge {
 	mqttConfig := cfg.NewMQTTConfig()
-	config := NewConfig(mqttConfig)
+	mainConfig := newConfig(mqttConfig)
 	mqttFuncWrapper := di.NewMQTTFuncWrapper()
-	wsdot2Mqtt := NewWsdot2Mqtt(config, mqttFuncWrapper)
-	return wsdot2Mqtt
+	mainMqttClient := newMQTTClient(mainConfig, mqttFuncWrapper)
+	mainClient := newClient(mainConfig)
+	mainBridge := newBridge(mainConfig, mainMqttClient, mainClient)
+	return mainBridge
 }

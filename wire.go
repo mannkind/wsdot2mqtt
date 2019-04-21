@@ -8,9 +8,8 @@ import (
 	mqttExtDI "github.com/mannkind/paho.mqtt.golang.ext/di"
 )
 
-// Initialize - Compile-time DI
-func Initialize() *Wsdot2Mqtt {
-	wire.Build(mqttExtCfg.NewMQTTConfig, NewConfig, mqttExtDI.NewMQTTFuncWrapper, NewWsdot2Mqtt)
+func initialize() *bridge {
+	wire.Build(mqttExtCfg.NewMQTTConfig, mqttExtDI.NewMQTTFuncWrapper, newConfig, newBridge, newMQTTClient, newClient)
 
-	return &Wsdot2Mqtt{}
+	return &bridge{}
 }

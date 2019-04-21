@@ -1,3 +1,5 @@
+github.com/adlio/darksky v0.0.0-20190219023837-63c8e8a7fabe h1:vueI3NMPUetp4LmVbOTeedUz9u7SPGrgcGRqAzSutY8=
+github.com/adlio/darksky v0.0.0-20190219023837-63c8e8a7fabe/go.mod h1:hmqB9YvxBpXHdQODW3y+wD3Q72jU/qR6OJZAiq9meyE=
 github.com/caarlos0/env v3.5.0+incompatible h1:Yy0UN8o9Wtr/jGHZDpCBLpNrzcFLLM2yixi/rBrKyJs=
 github.com/caarlos0/env v3.5.0+incompatible/go.mod h1:tdCsowwCzMLdkqRYDlHpZCp2UooDD3MspDBjZ2AD02Y=
 github.com/eclipse/paho.mqtt.golang v1.1.1 h1:iPJYXJLaViCshRTW/PSqImSS6HJ2Rf671WR0bXZ2GIU=
@@ -11,6 +13,8 @@ github.com/mannkind/paho.mqtt.golang.ext v0.1.0 h1:f/P0eiReHI9nOJxfBTM2Nxd5x91Bp
 github.com/mannkind/paho.mqtt.golang.ext v0.1.0/go.mod h1:/3IFyFHyEgDk3raBQrXcxDlNkh7tCji8GdiMJePPZOc=
 github.com/mannkind/paho.mqtt.golang.ext v0.2.0 h1:7Lr5QWj4SdEPmHoTrgh7L+0TCbZZMFcwlkLKAS+977c=
 github.com/mannkind/paho.mqtt.golang.ext v0.2.0/go.mod h1:qZFN1fTim3MhJ7/BxdcFQIbLEYNHeNJj6MryPoe0Hk8=
+github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
+github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 golang.org/x/net v0.0.0-20181011144130-49bb7cea24b1/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
