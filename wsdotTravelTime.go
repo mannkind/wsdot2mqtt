@@ -1,6 +1,6 @@
 package main
 
-type travelTime struct {
+type wsdotTravelTime struct {
 	AverageTime int     `json:"AverageTime"`
 	CurrentTime int     `json:"CurrentTime"`
 	Description string  `json:"Description"`

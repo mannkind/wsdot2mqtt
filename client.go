@@ -67,7 +67,7 @@ func (c *client) loop(once bool) {
 				c.publish(event{
 					version: 1,
 					key:     travelTimeSlug,
-					data:    *info,
+					data:    c.adapt(info),
 				})
 			} else {
 				log.Print(err)
@@ -83,10 +83,10 @@ func (c *client) loop(once bool) {
 	}
 }
 
-func (c *client) lookup(travelTimeID string) (*travelTime, error) {
+func (c *client) lookup(travelTimeID string) (*wsdotTravelTime, error) {
 	resp, err := resty.R().
 		SetHeader("Content-Type", "application/json").
-		SetResult(&travelTime{}).
+		SetResult(&wsdotTravelTime{}).
 		SetQueryParams(map[string]string{
 			"AccessCode":   c.secret,
 			"TravelTimeID": travelTimeID,
@@ -98,5 +98,13 @@ func (c *client) lookup(travelTimeID string) (*travelTime, error) {
 		return nil, fmt.Errorf("Unble to lookup the travel time for %s", travelTimeID)
 	}
 
-	return resp.Result().(*travelTime), nil
+	return resp.Result().(*wsdotTravelTime), nil
+}
+
+func (c *client) adapt(info *wsdotTravelTime) eventData {
+	return eventData{
+		CurrentTime:  info.CurrentTime,
+		Distance:     info.Distance,
+		TravelTimeID: info.TravelTimeID,
+	}
 }
