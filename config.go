@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	"github.com/caarlos0/env"
 	mqttExtCfg "github.com/mannkind/paho.mqtt.golang.ext/cfg"
+	log "github.com/sirupsen/logrus"
 )
 
 type config struct {
@@ -13,6 +13,7 @@ type config struct {
 	Secret            string        `env:"WSDOT_SECRET,required"`
 	LookupInterval    time.Duration `env:"WSDOT_LOOKUPINTERVAL"    envDefault:"3m"`
 	TravelTimeMapping []string      `env:"WSDOT_TRAVELTIMEMAPPING" envDefault:"132:seattle2everett,31:seattle2renton"`
+	DebugLogLevel     bool          `env:"WSDOT_DEBUG" envDefault:"false"`
 }
 
 func newConfig(mqttCfg *mqttExtCfg.MQTTConfig) *config {
@@ -32,7 +33,9 @@ func newConfig(mqttCfg *mqttExtCfg.MQTTConfig) *config {
 	}
 
 	if err := env.Parse(&c); err != nil {
-		log.Printf("Error unmarshaling configuration: %s", err)
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("Unable to unmarshal configuration")
 	}
 
 	redactedPassword := ""
@@ -40,17 +43,24 @@ func newConfig(mqttCfg *mqttExtCfg.MQTTConfig) *config {
 		redactedPassword = "<REDACTED>"
 	}
 
-	log.Printf("Environmental Settings:")
-	log.Printf("  * ClientID          : %s", c.MQTT.ClientID)
-	log.Printf("  * Broker            : %s", c.MQTT.Broker)
-	log.Printf("  * Username          : %s", c.MQTT.Username)
-	log.Printf("  * Password          : %s", redactedPassword)
-	log.Printf("  * Discovery         : %t", c.MQTT.Discovery)
-	log.Printf("  * DiscoveryPrefix   : %s", c.MQTT.DiscoveryPrefix)
-	log.Printf("  * DiscoveryName     : %s", c.MQTT.DiscoveryName)
-	log.Printf("  * TopicPrefix       : %s", c.MQTT.TopicPrefix)
-	log.Printf("  * LookupInterval    : %s", c.LookupInterval)
-	log.Printf("  * TravelTimeMapping : %s", c.TravelTimeMapping)
+	log.WithFields(log.Fields{
+		"MQTT.ClientID":        c.MQTT.ClientID,
+		"MQTT.Broker":          c.MQTT.Broker,
+		"MQTT.Username":        c.MQTT.Username,
+		"MQTT.Password":        redactedPassword,
+		"MQTT.Discovery":       c.MQTT.Discovery,
+		"MQTT.DiscoveryPrefix": c.MQTT.DiscoveryPrefix,
+		"MQTT.DiscoveryName":   c.MQTT.DiscoveryName,
+		"MQTT.TopicPrefix":     c.MQTT.TopicPrefix,
+		"WSDOT.LookupInterval": c.LookupInterval,
+		"WSDOT.TravelMapping":  c.TravelTimeMapping,
+		"WSDOT.DebugLogLevel":  c.DebugLogLevel,
+	}).Info("Environmental Settings")
+
+	if c.DebugLogLevel {
+		log.SetLevel(log.DebugLevel)
+		log.Debug("Enabling the debug log level")
+	}
 
 	return &c
 }

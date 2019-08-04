@@ -1,16 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"strings"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
 
 const (
-	travelTimeURL = "http://www.wsdot.wa.gov/Traffic/api/TravelTimes/TravelTimesREST.svc/GetTravelTimeAsJson"
+	travelTimeURL = "https://www.wsdot.wa.gov/Traffic/api/TravelTimes/TravelTimesREST.svc/GetTravelTimeAsJson"
 )
 
 type client struct {
@@ -27,8 +26,9 @@ func newClient(config *config) *client {
 
 		lookupInterval: config.LookupInterval,
 		secret:         config.Secret,
+
+		travelTimes: map[string]string{},
 	}
-	c.travelTimes = make(map[string]string, 0)
 
 	// Create a mapping between travel time ids and names
 	for _, m := range config.TravelTimeMapping {
@@ -55,13 +55,13 @@ func (c *client) register(l observer) {
 
 func (c *client) publish(e event) {
 	for o := range c.observers {
-		o.receive(e)
+		o.receiveState(e)
 	}
 }
 
 func (c *client) loop(once bool) {
 	for {
-		log.Print("Beginning lookup")
+		log.Info("Beginning lookup")
 		for travelTimeID, travelTimeSlug := range c.travelTimes {
 			if info, err := c.lookup(travelTimeID); err == nil {
 				c.publish(event{
@@ -69,11 +69,9 @@ func (c *client) loop(once bool) {
 					key:     travelTimeSlug,
 					data:    c.adapt(info),
 				})
-			} else {
-				log.Print(err)
 			}
 		}
-		log.Print("Ending lookup")
+		log.Info("Ending lookup")
 
 		if once {
 			break
@@ -94,8 +92,11 @@ func (c *client) lookup(travelTimeID string) (*wsdotTravelTime, error) {
 		Get(travelTimeURL)
 
 	if err != nil {
-		log.Print(err)
-		return nil, fmt.Errorf("Unble to lookup the travel time for %s", travelTimeID)
+		log.WithFields(log.Fields{
+			"error":        err,
+			"travelTimeID": travelTimeID,
+		}).Error("Unable to lokup the travel time specified")
+		return nil, err
 	}
 
 	return resp.Result().(*wsdotTravelTime), nil
