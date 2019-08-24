@@ -1,6 +1,8 @@
 package main
 
-type wsdotTravelTime struct {
+type travelMapping = map[string]string
+
+type wsdotTravelTimeAPIResponse struct {
 	AverageTime int     `json:"AverageTime"`
 	CurrentTime int     `json:"CurrentTime"`
 	Description string  `json:"Description"`
@@ -26,23 +28,8 @@ type wsdotTravelTime struct {
 	TravelTimeID int    `json:"TravelTimeID"`
 }
 
-type eventData struct {
+type wsdotTravelTime struct {
 	CurrentTime  int
 	Distance     float64
 	TravelTimeID int
-}
-
-type event struct {
-	version int64
-	key     string
-	data    eventData
-}
-
-type observer interface {
-	receiveState(event)
-	receiveCommand(int64, event)
-}
-
-type publisher interface {
-	register(observer)
 }
