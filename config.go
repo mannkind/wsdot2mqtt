@@ -1,42 +1,53 @@
 package main
 
 import (
-	"time"
+	"reflect"
 
-	"github.com/caarlos0/env"
-	mqttExtCfg "github.com/mannkind/paho.mqtt.golang.ext/cfg"
+	"github.com/caarlos0/env/v6"
+	"github.com/mannkind/twomqtt"
 	log "github.com/sirupsen/logrus"
 )
 
 type config struct {
-	MQTT              *mqttExtCfg.MQTTConfig
-	Secret            string        `env:"WSDOT_SECRET,required"`
-	LookupInterval    time.Duration `env:"WSDOT_LOOKUPINTERVAL"    envDefault:"3m"`
-	TravelTimeMapping []string      `env:"WSDOT_TRAVELTIMEMAPPING" envDefault:"132:seattle2everett,31:seattle2renton"`
-	DebugLogLevel     bool          `env:"WSDOT_DEBUG" envDefault:"false"`
+	GeneralConfig       twomqtt.GeneralConfig
+	GlobalClientConfig  globalClientConfig
+	MQTTClientConfig    mqttClientConfig
+	ServiceClientConfig serviceClientConfig
 }
 
-func newConfig(mqttCfg *mqttExtCfg.MQTTConfig) *config {
-	c := config{}
-	c.MQTT = mqttCfg
-	c.MQTT.Defaults("DefaultWSDOT2MQTTClientID", "wsdot", "home/wsdot")
+func newConfig() config {
+	c := config{
+		GeneralConfig:       twomqtt.GeneralConfig{},
+		GlobalClientConfig:  globalClientConfig{},
+		MQTTClientConfig:    mqttClientConfig{},
+		ServiceClientConfig: serviceClientConfig{},
+	}
 
-	if err := env.Parse(&c); err != nil {
+	// Manually parse the address:name mapping
+	if err := env.ParseWithFuncs(&c, map[reflect.Type]env.ParserFunc{
+		reflect.TypeOf(travelMapping{}): twomqtt.SimpleKVMapParser(":", ","),
+	}); err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("Unable to unmarshal configuration")
 	}
 
-	log.WithFields(log.Fields{
-		"WSDOT.LookupInterval": c.LookupInterval,
-		"WSDOT.TravelMapping":  c.TravelTimeMapping,
-		"WSDOT.DebugLogLevel":  c.DebugLogLevel,
-	}).Info("Environmental Settings")
-
-	if c.DebugLogLevel {
-		log.SetLevel(log.DebugLevel)
-		log.Debug("Enabling the debug log level")
+	// Defaults
+	if c.MQTTClientConfig.MQTTProxyConfig.DiscoveryName == "" {
+		c.MQTTClientConfig.MQTTProxyConfig.DiscoveryName = "wsdot"
 	}
 
-	return &c
+	if c.MQTTClientConfig.MQTTProxyConfig.TopicPrefix == "" {
+		c.MQTTClientConfig.MQTTProxyConfig.TopicPrefix = "home/wsdot"
+	}
+
+	// env.Parse* does not seem to work with embedded structs
+	c.MQTTClientConfig.TravelTimeMapping = c.GlobalClientConfig.TravelTimeMapping
+	c.ServiceClientConfig.TravelTimeMapping = c.GlobalClientConfig.TravelTimeMapping
+
+	if c.GeneralConfig.DebugLogLevel {
+		log.SetLevel(log.DebugLevel)
+	}
+
+	return c
 }
