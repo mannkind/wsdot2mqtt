@@ -1,10 +1,8 @@
 package main
 
 import (
-	"reflect"
 	"time"
 
-	"github.com/mannkind/twomqtt"
 	log "github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
@@ -14,13 +12,14 @@ const (
 )
 
 type serviceClient struct {
-	twomqtt.StatePublisher
 	serviceClientConfig
+	stateUpdateChan stateChannel
 }
 
-func newServiceClient(serviceClientCfg serviceClientConfig) *serviceClient {
+func newServiceClient(serviceClientCfg serviceClientConfig, stateUpdateChan stateChannel) *serviceClient {
 	c := serviceClient{
 		serviceClientConfig: serviceClientCfg,
+		stateUpdateChan:     stateUpdateChan,
 	}
 
 	log.WithFields(log.Fields{
@@ -44,12 +43,12 @@ func (c *serviceClient) loop() {
 				continue
 			}
 
-			event, err := c.adapt(info)
+			obj, err := c.adapt(info)
 			if err != nil {
 				continue
 			}
 
-			c.SendState(event)
+			c.stateUpdateChan <- obj
 		}
 
 		log.WithFields(log.Fields{
@@ -80,7 +79,7 @@ func (c *serviceClient) lookup(travelTimeID string) (*wsdotTravelTimeAPIResponse
 	return resp.Result().(*wsdotTravelTimeAPIResponse), nil
 }
 
-func (c *serviceClient) adapt(info *wsdotTravelTimeAPIResponse) (twomqtt.Event, error) {
+func (c *serviceClient) adapt(info *wsdotTravelTimeAPIResponse) (wsdotTravelTime, error) {
 	log.WithFields(log.Fields{
 		"info": info,
 	}).Debug("Adapting travel time information")
@@ -90,11 +89,7 @@ func (c *serviceClient) adapt(info *wsdotTravelTimeAPIResponse) (twomqtt.Event, 
 		Distance:     info.Distance,
 		TravelTimeID: info.TravelTimeID,
 	}
-	event := twomqtt.Event{
-		Type:    reflect.TypeOf(obj),
-		Payload: obj,
-	}
 
 	log.Debug("Finished adapting time travel information")
-	return event, nil
+	return obj, nil
 }
