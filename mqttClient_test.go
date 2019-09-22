@@ -45,14 +45,14 @@ func TestDiscovery(t *testing.T) {
 			defaultDiscoveryName,
 			defaultTopicPrefix,
 			"homeassistant/sensor/" + defaultDiscoveryName + "/" + knownTravelIDName + "/config",
-			"{\"availability_topic\":\"" + defaultTopicPrefix + "/status\",\"icon\":\"mdi:car\",\"name\":\"" + defaultDiscoveryName + " " + knownTravelIDName + "\",\"state_topic\":\"" + defaultTopicPrefix + "/" + knownTravelIDName + "/state\",\"unique_id\":\"" + defaultDiscoveryName + "." + knownTravelIDName + "\",\"unit_of_measurement\":\"min\"}",
+			"{\"availability_topic\":\"" + defaultTopicPrefix + "/status\",\"device\":{\"identifiers\":[\"" + defaultTopicPrefix + "/status\"],\"manufacturer\":\"twomqtt\",\"name\":\"x2mqtt\",\"sw_version\":\"X.X.X\"},\"icon\":\"mdi:car\",\"name\":\"" + defaultDiscoveryName + " " + knownTravelIDName + "\",\"state_topic\":\"" + defaultTopicPrefix + "/" + knownTravelIDName + "/state\",\"unique_id\":\"" + defaultDiscoveryName + "." + knownTravelIDName + "\",\"unit_of_measurement\":\"min\"}",
 		},
 		{
 			knownTravelID + ":" + knownTravelIDName,
 			knownDiscoveryName,
 			knownTopicPrefix,
 			"homeassistant/sensor/" + knownDiscoveryName + "/" + knownTravelIDName + "/config",
-			"{\"availability_topic\":\"" + knownTopicPrefix + "/status\",\"icon\":\"mdi:car\",\"name\":\"" + knownDiscoveryName + " " + knownTravelIDName + "\",\"state_topic\":\"" + knownTopicPrefix + "/" + knownTravelIDName + "/state\",\"unique_id\":\"" + knownDiscoveryName + "." + knownTravelIDName + "\",\"unit_of_measurement\":\"min\"}",
+			"{\"availability_topic\":\"" + knownTopicPrefix + "/status\",\"device\":{\"identifiers\":[\"" + knownTopicPrefix + "/status\"],\"manufacturer\":\"twomqtt\",\"name\":\"x2mqtt\",\"sw_version\":\"X.X.X\"},\"icon\":\"mdi:car\",\"name\":\"" + knownDiscoveryName + " " + knownTravelIDName + "\",\"state_topic\":\"" + knownTopicPrefix + "/" + knownTravelIDName + "/state\",\"unique_id\":\"" + knownDiscoveryName + "." + knownTravelIDName + "\",\"unit_of_measurement\":\"min\"}",
 		},
 	}
 
