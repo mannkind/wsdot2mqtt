@@ -14,12 +14,12 @@ License](https://img.shields.io/badge/License-MIT-orange.svg?style=flat-square)]
 docker run -d --name="wsdot2mqtt" -e "WSDOT_SECRET=YOURSECRETAPIKEY" -v /etc/localtime:/etc/localtime:ro mannkind/wsdot2mqtt
 ```
 
-### Via Make
+### Via Mage
 
 ```bash
 git clone https://github.com/mannkind/wsdot2mqtt
 cd wsdot2mqtt
-make
+mage
 WSDOT_SECRET="YOURSECRETAPIKEY" ./wsdot2mqtt
 ```
 
