@@ -1,8 +1,9 @@
 package main
 
 import (
-	"time"
+	"fmt"
 
+	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	resty "gopkg.in/resty.v1"
 )
@@ -31,31 +32,34 @@ func newServiceClient(serviceClientCfg serviceClientConfig, stateUpdateChan stat
 }
 
 func (c *serviceClient) run() {
+	// Run immediately
 	go c.loop()
+
+	// Schedule additional runs
+	sched := cron.New()
+	sched.AddFunc(fmt.Sprintf("@every %s", c.LookupInterval), c.loop)
+	sched.Start()
 }
 
 func (c *serviceClient) loop() {
-	for {
-		log.Info("Looping")
-		for travelTimeID := range c.TravelTimeMapping {
-			info, err := c.lookup(travelTimeID)
-			if err != nil {
-				continue
-			}
-
-			obj, err := c.adapt(info)
-			if err != nil {
-				continue
-			}
-
-			c.stateUpdateChan <- obj
+	log.Info("Looping")
+	for travelTimeID := range c.TravelTimeMapping {
+		info, err := c.lookup(travelTimeID)
+		if err != nil {
+			continue
 		}
 
-		log.WithFields(log.Fields{
-			"sleep": c.LookupInterval,
-		}).Info("Finished looping; sleeping")
-		time.Sleep(c.LookupInterval)
+		obj, err := c.adapt(info)
+		if err != nil {
+			continue
+		}
+
+		c.stateUpdateChan <- obj
 	}
+
+	log.WithFields(log.Fields{
+		"sleep": c.LookupInterval,
+	}).Info("Finished looping; sleeping")
 }
 
 func (c *serviceClient) lookup(travelTimeID string) (*wsdotTravelTimeAPIResponse, error) {
