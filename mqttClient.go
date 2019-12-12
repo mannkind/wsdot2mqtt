@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/mannkind/twomqtt"
-	log "github.com/sirupsen/logrus"
 )
 
 type mqttClient struct {
-	mqttClientConfig
 	*twomqtt.MQTTProxy
+	mqttClientConfig
 	stateUpdateChan stateChannel
 }
 
@@ -22,39 +20,23 @@ func newMQTTClient(mqttClientCfg mqttClientConfig, client *twomqtt.MQTTProxy, st
 		stateUpdateChan:  stateUpdateChan,
 	}
 
-	c.Initialize(
-		c.onConnect,
-		c.onDisconnect,
-	)
-
-	c.LogSettings()
+	c.MQTTProxy.
+		SetDiscoveryHandler(c.discovery).
+		Build()
 
 	return &c
 }
 
 func (c *mqttClient) run() {
 	c.Run()
-	go c.receive()
+	go c.read()
 }
 
-func (c *mqttClient) onConnect(client mqtt.Client) {
-	log.Info("Connected to MQTT")
-	c.Publish(c.AvailabilityTopic(), "online")
-	c.publishDiscovery()
-}
-
-func (c *mqttClient) onDisconnect(client mqtt.Client, err error) {
-	log.WithFields(log.Fields{
-		"error": err,
-	}).Error("Disconnected from MQTT")
-}
-
-func (c *mqttClient) publishDiscovery() {
+func (c *mqttClient) discovery() []twomqtt.MQTTDiscovery {
+	mqds := []twomqtt.MQTTDiscovery{}
 	if !c.Discovery {
-		return
+		return mqds
 	}
-
-	log.Info("MQTT discovery publishing")
 
 	for _, travelTimeSlug := range c.TravelTimeMapping {
 		sensor := strings.ToLower(travelTimeSlug)
@@ -64,19 +46,19 @@ func (c *mqttClient) publishDiscovery() {
 		mqd.Device.Name = Name
 		mqd.Device.SWVersion = Version
 
-		c.PublishDiscovery(mqd)
+		mqds = append(mqds, *mqd)
 	}
 
-	log.Info("Finished MQTT discovery publishing")
+	return mqds
 }
 
-func (c *mqttClient) receive() {
+func (c *mqttClient) read() {
 	for info := range c.stateUpdateChan {
-		c.receiveState(info)
+		c.publishState(info)
 	}
 }
 
-func (c *mqttClient) receiveState(info wsdotTravelTime) {
+func (c *mqttClient) publishState(info wsdotTravelTime) {
 	travelTimeID := fmt.Sprintf("%d", info.TravelTimeID)
 	travelTimeSlug := c.TravelTimeMapping[travelTimeID]
 

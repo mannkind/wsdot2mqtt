@@ -60,7 +60,7 @@ func TestDiscovery(t *testing.T) {
 		setEnvs("true", v.DiscoveryName, v.TopicPrefix, v.TravelTimes)
 
 		c := initialize()
-		c.mqttClient.publishDiscovery()
+		c.mqttClient.PublishDiscovery()
 
 		actualPayload := c.mqttClient.LastPublishedOnTopic(v.ExpectedTopic)
 		if actualPayload != v.ExpectedPayload {
@@ -102,7 +102,7 @@ func TestReceieveState(t *testing.T) {
 		}
 
 		c := initialize()
-		c.mqttClient.receiveState(obj)
+		c.mqttClient.publishState(obj)
 
 		actualPayload := c.mqttClient.LastPublishedOnTopic(v.ExpectedTopic)
 		if actualPayload != v.ExpectedPayload {

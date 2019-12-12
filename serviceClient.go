@@ -23,25 +23,26 @@ func newServiceClient(serviceClientCfg serviceClientConfig, stateUpdateChan stat
 		stateUpdateChan:     stateUpdateChan,
 	}
 
+	return &c
+}
+
+func (c *serviceClient) run() {
+	// Log the current settings
 	log.WithFields(log.Fields{
 		"WSDOT.LookupInterval": c.LookupInterval,
 		"WSDOT.TravelMapping":  c.TravelTimeMapping,
 	}).Info("Service Environmental Settings")
 
-	return &c
-}
-
-func (c *serviceClient) run() {
 	// Run immediately
-	go c.loop()
+	c.poll()
 
 	// Schedule additional runs
 	sched := cron.New()
-	sched.AddFunc(fmt.Sprintf("@every %s", c.LookupInterval), c.loop)
+	sched.AddFunc(fmt.Sprintf("@every %s", c.LookupInterval), c.poll)
 	sched.Start()
 }
 
-func (c *serviceClient) loop() {
+func (c *serviceClient) poll() {
 	log.Info("Looping")
 	for travelTimeID := range c.TravelTimeMapping {
 		info, err := c.lookup(travelTimeID)
@@ -84,16 +85,9 @@ func (c *serviceClient) lookup(travelTimeID string) (*wsdotTravelTimeAPIResponse
 }
 
 func (c *serviceClient) adapt(info *wsdotTravelTimeAPIResponse) (wsdotTravelTime, error) {
-	log.WithFields(log.Fields{
-		"info": info,
-	}).Debug("Adapting travel time information")
-
-	obj := wsdotTravelTime{
+	return wsdotTravelTime{
 		CurrentTime:  info.CurrentTime,
 		Distance:     info.Distance,
 		TravelTimeID: info.TravelTimeID,
-	}
-
-	log.Debug("Finished adapting time travel information")
-	return obj, nil
+	}, nil
 }
