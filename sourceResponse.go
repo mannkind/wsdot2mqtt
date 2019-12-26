@@ -1,8 +1,6 @@
 package main
 
-type travelMapping = map[string]string
-
-type wsdotTravelTimeAPIResponse struct {
+type sourceResponse struct {
 	AverageTime int     `json:"AverageTime"`
 	CurrentTime int     `json:"CurrentTime"`
 	Description string  `json:"Description"`
@@ -26,10 +24,4 @@ type wsdotTravelTimeAPIResponse struct {
 	} `json:"StartPoint"`
 	TimeUpdated  string `json:"TimeUpdated"`
 	TravelTimeID int    `json:"TravelTimeID"`
-}
-
-type wsdotTravelTime struct {
-	CurrentTime  int
-	Distance     float64
-	TravelTimeID int
 }
