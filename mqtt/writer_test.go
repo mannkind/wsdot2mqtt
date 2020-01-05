@@ -1,9 +1,11 @@
-package main
+package mqtt
 
 import (
 	"os"
 	"testing"
 
+	"github.com/mannkind/twomqtt"
+	"github.com/mannkind/wsdot2mqtt/shared"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,6 +18,17 @@ const knownTopicPrefix = "home/wsdotMQTTTopicPrefix"
 
 func init() {
 	log.SetLevel(log.PanicLevel)
+}
+
+func initialize() *Writer {
+	opts := shared.NewOpts()
+	v := shared.NewRepresentationChannel()
+	v3 := shared.NewRepresentationChannelIncoming(v)
+	mqttOpts := NewOpts(opts)
+	twomqttMQTTOpts := mqttOpts.MQTTOpts
+	twomqttMQTT := twomqtt.NewMQTT(twomqttMQTTOpts)
+	writer := NewWriter(twomqttMQTT, mqttOpts, v3)
+	return writer
 }
 
 func setEnvs(d, dn, tp, a string) {
@@ -69,7 +82,7 @@ func TestDiscovery(t *testing.T) {
 		setEnvs("true", v.DiscoveryName, v.TopicPrefix, v.TravelTimes)
 
 		c := initialize()
-		mqds := c.sink.discovery()
+		mqds := c.discovery()
 
 		for _, mqd := range mqds {
 			if mqd.Name != v.ExpectedName {
@@ -117,14 +130,14 @@ func TestPublish(t *testing.T) {
 	for _, v := range tests {
 		setEnvs("false", "", v.TopicPrefix, v.TravelTimes)
 
-		obj := sourceRep{
+		obj := shared.Representation{
 			TravelTimeID: v.TravelTimeID,
 			CurrentTime:  v.Time,
 			Distance:     1,
 		}
 
 		c := initialize()
-		published := c.sink.publish(obj)
+		published := c.publish(obj)
 
 		if published.Payload != v.ExpectedPayload {
 			t.Errorf("Actual:%s\nExpected:%s", published.Payload, v.ExpectedPayload)
