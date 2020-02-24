@@ -1,6 +1,7 @@
-package main
+package source
 
-type sourceResponse struct {
+// serviceRepresentation is a representation of the data returned from the source system
+type serviceRepresentation struct {
 	AverageTime int     `json:"AverageTime"`
 	CurrentTime int     `json:"CurrentTime"`
 	Description string  `json:"Description"`
