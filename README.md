@@ -6,22 +6,33 @@ License](https://img.shields.io/badge/License-MIT-orange.svg?style=flat-square)]
 [![Coverage Status](https://img.shields.io/codecov/c/github/mannkind/wsdot2mqtt/master.svg)](http://codecov.io/github/mannkind/wsdot2mqtt?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/mannkind/wsdot2mqtt)](https://goreportcard.com/report/github.com/mannkind/wsdot2mqtt)
 
-## Installation
+An experiment to publish WSDOT Travel Times to MQTT.
 
-### Via Docker
+## Use
 
-```bash
-docker run -d --name="wsdot2mqtt" -e "WSDOT_SECRET=YOURSECRETAPIKEY" -v /etc/localtime:/etc/localtime:ro mannkind/wsdot2mqtt
-```
+The application can be locally built using `mage` or you can utilize the multi-architecture Docker image(s).
 
-### Via Mage
+### Example
 
 ```bash
-git clone https://github.com/mannkind/wsdot2mqtt
-cd wsdot2mqtt
-mage
-WSDOT_SECRET="YOURSECRETAPIKEY" ./wsdot2mqtt
+docker run \
+-e WSDOT_SECRET="BCz285y032akbAc6amd1" \
+-e WSDOT_TRAVELTIMEMAPPING="132:seattle2everett" \
+-e MQTT_BROKER="tcp://localhost:1883" \
+-e MQTT_DISCOVERY="true" \
+mannkind/wsdot2mqtt:latest
 ```
+
+OR
+
+```bash
+WSDOT_SECRET="BCz285y032akbAc6amd1" \
+WSDOT_TRAVELTIMEMAPPING="132:seattle2everett" \
+MQTT_BROKER="tcp://localhost:1883" \
+MQTT_DISCOVERY="true" \
+./wsdot2mqtt 
+```
+
 
 ## Configuration
 
