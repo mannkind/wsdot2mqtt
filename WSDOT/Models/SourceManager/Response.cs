@@ -12,6 +12,7 @@ namespace WSDOT.Models.SourceManager
         public string Name { get; set; } = string.Empty;
         public string TimeUpdated { get; set; } = string.Empty;
         public long TravelTimeID { get; set; } = 0;
+        public bool Ok { get; set; } = false;
 
         public override string ToString() => $"Distance: {this.Distance} miles, Current Time: {this.CurrentTime} minutes";
     }

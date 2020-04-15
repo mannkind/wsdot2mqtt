@@ -3,18 +3,18 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Linq;
-using TwoMQTT.Core.Communication;
+using TwoMQTT.Core.Managers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Net.Http;
 using WSDOT.Models.Shared;
 
-namespace WSDOT
+namespace WSDOT.Managers
 {
-    public class SourceManager : HTTPManager<SlugMapping, Resource, Command>
+    public class Source : HTTPManager<SlugMapping, Resource, Command>
     {
-        public SourceManager(ILogger<SourceManager> logger, IOptions<Opts> sharedOpts, IOptions<Models.SourceManager.Opts> opts, ChannelWriter<Resource> outgoing, ChannelReader<Command> incoming, IHttpClientFactory httpClientFactory) :
+        public Source(ILogger<Source> logger, IOptions<Opts> sharedOpts, IOptions<Models.SourceManager.Opts> opts, ChannelWriter<Resource> outgoing, ChannelReader<Command> incoming, IHttpClientFactory httpClientFactory) :
             base(logger, outgoing, incoming, httpClientFactory.CreateClient())
         {
             this.opts = opts.Value;
@@ -51,7 +51,7 @@ namespace WSDOT
             }
 
             var results = await Task.WhenAll(tasks);
-            foreach (var result in results)
+            foreach (var result in results.Where(x => x.Ok))
             {
                 this.logger.LogInformation($"Found {result}");
                 await this.outgoing.WriteAsync(Resource.From(result), cancellationToken);
@@ -70,8 +70,14 @@ namespace WSDOT
             var baseUrl = "https://www.wsdot.wa.gov/Traffic/api/TravelTimes/TravelTimesREST.svc/GetTravelTimeAsJson";
             var query = $"AccessCode={this.opts.ApiKey}&TravelTimeID={key.TravelTimeID}";
             var resp = await this.client.GetAsync($"{baseUrl}?{query}", cancellationToken);
+            if (!resp.IsSuccessStatusCode)
+            {
+                return new Models.SourceManager.Response();
+            }
+
             var content = await resp.Content.ReadAsStringAsync();
             var obj = JsonConvert.DeserializeObject<Models.SourceManager.Response>(content);
+            obj.Ok = true;
 
             return obj;
         }
