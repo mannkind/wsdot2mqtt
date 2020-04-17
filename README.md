@@ -41,9 +41,9 @@ Configuration happens via environmental variables
 
 ```bash
 WSDOT__SOURCE__APIKEY                     - The WSDOT API key
+WSDOT__SHARED__RESOURCES__#__TravelTimeID - The Travel Time ID for a specific travel time
+WSDOT__SHARED__RESOURCES__#__Slug         - The slug to identify the specific travel time
 WSDOT__SOURCE__POLLINGINTERVAL            - [OPTIONAL] The delay between travel time lookups lookups, defaults to "0.00:03:31"
-WSDOT__SHARED__RESOURCES__#__TravelTimeID - The WSDOT Time Travel ID (e.g. 132)
-WSDOT__SHARED__RESOURCES__#__Slug         - The slug for the Time Travel ID (e.g. seattle2everett)
 WSDOT__SINK__TOPICPREFIX                  - [OPTIONAL] The MQTT topic on which to publish the collection lookup results, defaults to "home/wsdot"
 WSDOT__SINK__DISCOVERYENABLED             - [OPTIONAL] The MQTT discovery flag for Home Assistant, defaults to false
 WSDOT__SINK__DISCOVERYPREFIX              - [OPTIONAL] The MQTT discovery prefix for Home Assistant, defaults to "homeassistant"

@@ -9,6 +9,9 @@ namespace WSDOT.Models.SinkManager
     {
         public const string Section = "WSDOT:Sink";
 
+        /// <summary>
+        /// 
+        /// </summary>
         public Opts()
         {
             this.TopicPrefix = "home/wsdot";

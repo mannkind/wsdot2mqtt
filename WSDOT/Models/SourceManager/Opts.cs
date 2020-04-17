@@ -9,9 +9,16 @@ namespace WSDOT.Models.SourceManager
     {
         public const string Section = "WSDOT:Source";
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <value></value>
         public string ApiKey { get; set; } = string.Empty;
-        public TimeSpan PollingInterval { get; set; } = new TimeSpan(0, 3, 31);
 
-        public override string ToString() => $"ApiKey: {this.ApiKey}, Polling Interval: {this.PollingInterval}";
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public TimeSpan PollingInterval { get; set; } = new TimeSpan(0, 3, 31);
     }
 }
