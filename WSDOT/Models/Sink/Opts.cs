@@ -7,7 +7,7 @@ namespace WSDOT.Models.SinkManager
     /// </summary>
     public class Opts : MQTTManagerOptions
     {
-        public const string Section = "WSDOT:Sink";
+        public const string Section = "WSDOT:MQTT";
 
         /// <summary>
         /// 

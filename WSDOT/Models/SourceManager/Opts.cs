@@ -7,7 +7,7 @@ namespace WSDOT.Models.SourceManager
     /// </summary>
     public class Opts
     {
-        public const string Section = "WSDOT:Source";
+        public const string Section = "WSDOT";
 
         /// <summary>
         /// 

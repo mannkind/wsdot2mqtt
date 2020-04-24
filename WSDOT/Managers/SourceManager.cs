@@ -39,7 +39,7 @@ namespace WSDOT.Managers
             this.Logger.LogInformation(
                 $"ApiKey: {this.Opts.ApiKey}\n" +
                 $"PollingInterval: {this.Opts.PollingInterval}\n" +
-                $"Resources: {this.SharedOpts.Resources.Select(x => $"{x.TravelTimeID}:{x.Slug}")}\n" +
+                $"Resources: {string.Join(',', this.SharedOpts.Resources.Select(x => $"{x.TravelTimeID}:{x.Slug}"))}\n" +
                 $""
             );
 

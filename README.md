@@ -15,22 +15,22 @@ The application can be locally built using `dotnet build` or you can utilize the
 
 ```bash
 docker run \
--e WSDOT__SOURCE__APIKEY="BCz285y032akbAc6amd1" \
--e WSDOT__SHARED__RESOURCES__0__TravelTimeID="132" \
--e WSDOT__SHARED__RESOURCES__0__Slug="seattle2everett" \
--e WSDOT__SINK__BROKER="localhost" \
--e WSDOT__SINK__DISCOVERYENABLED="true" \
+-e WSDOT__APIKEY="BCz285y032akbAc6amd1" \
+-e WSDOT__RESOURCES__0__TravelTimeID="132" \
+-e WSDOT__RESOURCES__0__Slug="seattle2everett" \
+-e WSDOT__MQTT__BROKER="localhost" \
+-e WSDOT__MQTT__DISCOVERYENABLED="true" \
 mannkind/wsdot2mqtt:latest
 ```
 
 OR
 
 ```bash
-WSDOT__SOURCE__APIKEY="BCz285y032akbAc6amd1" \
-WSDOT__SHARED__RESOURCES__0__TravelTimeID="132" \
-WSDOT__SHARED__RESOURCES__0__Slug="seattle2everett" \
-WSDOT__SINK__BROKER="localhost" \
-WSDOT__SINK__DISCOVERYENABLED="true" \
+WSDOT__APIKEY="BCz285y032akbAc6amd1" \
+WSDOT__RESOURCES__0__TravelTimeID="132" \
+WSDOT__RESOURCES__0__Slug="seattle2everett" \
+WSDOT__MQTT__BROKER="localhost" \
+WSDOT__MQTT__DISCOVERYENABLED="true" \
 ./wsdot2mqtt 
 ```
 
@@ -40,15 +40,15 @@ WSDOT__SINK__DISCOVERYENABLED="true" \
 Configuration happens via environmental variables
 
 ```bash
-WSDOT__SOURCE__APIKEY                     - The WSDOT API key
-WSDOT__SHARED__RESOURCES__#__TravelTimeID - The Travel Time ID for a specific travel time
-WSDOT__SHARED__RESOURCES__#__Slug         - The slug to identify the specific travel time
-WSDOT__SOURCE__POLLINGINTERVAL            - [OPTIONAL] The delay between travel time lookups lookups, defaults to "0.00:03:31"
-WSDOT__SINK__TOPICPREFIX                  - [OPTIONAL] The MQTT topic on which to publish the collection lookup results, defaults to "home/wsdot"
-WSDOT__SINK__DISCOVERYENABLED             - [OPTIONAL] The MQTT discovery flag for Home Assistant, defaults to false
-WSDOT__SINK__DISCOVERYPREFIX              - [OPTIONAL] The MQTT discovery prefix for Home Assistant, defaults to "homeassistant"
-WSDOT__SINK__DISCOVERYNAME                - [OPTIONAL] The MQTT discovery name for Home Assistant, defaults to "wsdot"
-WSDOT__SINK__BROKER                       - [OPTIONAL] The MQTT broker, defaults to "test.mosquitto.org"
-WSDOT__SINK__USERNAME                     - [OPTIONAL] The MQTT username, default to ""
-WSDOT__SINK__PASSWORD                     - [OPTIONAL] The MQTT password, default to ""
+WSDOT__APIKEY                             - The WSDOT API key
+WSDOT__RESOURCES__#__TravelTimeID         - The Travel Time ID for a specific travel time
+WSDOT__RESOURCES__#__Slug                 - The slug to identify the specific travel time
+WSDOT__POLLINGINTERVAL                    - [OPTIONAL] The delay between travel time lookups lookups, defaults to "0.00:03:31"
+WSDOT__MQTT__TOPICPREFIX                  - [OPTIONAL] The MQTT topic on which to publish the collection lookup results, defaults to "home/wsdot"
+WSDOT__MQTT__DISCOVERYENABLED             - [OPTIONAL] The MQTT discovery flag for Home Assistant, defaults to false
+WSDOT__MQTT__DISCOVERYPREFIX              - [OPTIONAL] The MQTT discovery prefix for Home Assistant, defaults to "homeassistant"
+WSDOT__MQTT__DISCOVERYNAME                - [OPTIONAL] The MQTT discovery name for Home Assistant, defaults to "wsdot"
+WSDOT__MQTT__BROKER                       - [OPTIONAL] The MQTT broker, defaults to "test.mosquitto.org"
+WSDOT__MQTT__USERNAME                     - [OPTIONAL] The MQTT username, default to ""
+WSDOT__MQTT__PASSWORD                     - [OPTIONAL] The MQTT password, default to ""
 ```

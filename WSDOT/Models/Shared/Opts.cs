@@ -7,7 +7,7 @@ namespace WSDOT.Models.Shared
     /// </summary>
     public class Opts
     {
-        public const string Section = "WSDOT:Shared";
+        public const string Section = "WSDOT";
 
         /// <summary>
         /// 
