@@ -1,10 +1,10 @@
-using System.Threading.Tasks;
+using System;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System;
 using TwoMQTT.Core.DataAccess;
 using WSDOT.Models.Shared;
 

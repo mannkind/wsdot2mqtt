@@ -52,3 +52,9 @@ WSDOT__MQTT__BROKER                       - [OPTIONAL] The MQTT broker, defaults
 WSDOT__MQTT__USERNAME                     - [OPTIONAL] The MQTT username, default to ""
 WSDOT__MQTT__PASSWORD                     - [OPTIONAL] The MQTT password, default to ""
 ```
+
+## Prior Implementations
+
+### Golang
+* Last Commit: [ab95a034cf11c03b58468e76ae9a557a1e61be90](https://github.com/mannkind/wsdot2mqtt/commit/ab95a034cf11c03b58468e76ae9a557a1e61be90)
+* Last Docker Image: [mannkind/wsdot2mqtt:v0.6.20055.0750](https://hub.docker.com/layers/mannkind/wsdot2mqtt/v0.6.20055.0750/images/sha256-b499b7d6c0bb7f4ad873b233736428b4ca16426ca7f3ce3152e3ba97b0a8ac1a?context=explore)
