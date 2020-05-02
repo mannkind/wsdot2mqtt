@@ -29,7 +29,7 @@ namespace WSDOT.Managers
         public SinkManager(ILogger<SinkManager> logger, IOptions<Opts> sharedOpts,
             IOptions<Models.SinkManager.Opts> opts, ChannelReader<Resource> incomingData,
             ChannelWriter<Command> outgoingCommand) :
-            base(logger, opts, incomingData, outgoingCommand, sharedOpts.Value.Resources)
+            base(logger, opts, incomingData, outgoingCommand, sharedOpts.Value.Resources, string.Empty)
         {
         }
 

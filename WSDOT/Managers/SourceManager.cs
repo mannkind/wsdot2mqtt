@@ -28,20 +28,10 @@ namespace WSDOT.Managers
             IOptions<Models.SourceManager.Opts> opts, ChannelWriter<Resource> outgoingData,
             ChannelReader<Command> incomingCommand,
             IHTTPSourceDAO<SlugMapping, Command, FetchResponse, object> sourceDAO) :
-            base(logger, outgoingData, incomingCommand, sharedOpts.Value.Resources, opts.Value.PollingInterval, sourceDAO)
+            base(logger, outgoingData, incomingCommand, sharedOpts.Value.Resources, opts.Value.PollingInterval,
+                sourceDAO, SourceSettings(sharedOpts.Value, opts.Value))
         {
-            this.Opts = opts.Value;
-            this.SharedOpts = sharedOpts.Value;
         }
-
-        /// <inheritdoc />
-        protected override void LogSettings() =>
-            this.Logger.LogInformation(
-                $"ApiKey: {this.Opts.ApiKey}\n" +
-                $"PollingInterval: {this.Opts.PollingInterval}\n" +
-                $"Resources: {string.Join(',', this.SharedOpts.Resources.Select(x => $"{x.TravelTimeID}:{x.Slug}"))}\n" +
-                $""
-            );
 
         /// <inheritdoc />
         protected override Resource MapResponse(FetchResponse src) =>
@@ -54,14 +44,10 @@ namespace WSDOT.Managers
                 Closed = src.CurrentTime == 0,
             };
 
-        /// <summary>
-        /// The options for the source.
-        /// </summary>
-        private readonly Models.SourceManager.Opts Opts;
-
-        /// <summary>
-        /// The options that are shared.
-        /// </summary>
-        private readonly Models.Shared.Opts SharedOpts;
+        private static string SourceSettings(Models.Shared.Opts sharedOpts, Models.SourceManager.Opts opts) =>
+            $"ApiKey: {opts.ApiKey}\n" +
+            $"PollingInterval: {opts.PollingInterval}\n" +
+            $"Resources: {string.Join(',', sharedOpts.Resources.Select(x => $"{x.TravelTimeID}:{x.Slug}"))}\n" +
+            $"";
     }
 }
