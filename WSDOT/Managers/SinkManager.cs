@@ -42,14 +42,18 @@ namespace WSDOT.Managers
                 .Select(x => x.Slug)
                 .FirstOrDefault() ?? string.Empty;
 
+            this.Logger.LogDebug($"Found slug {slug} for incoming data for {input.TravelTimeID}");
             if (string.IsNullOrEmpty(slug))
             {
+                this.Logger.LogDebug($"Unable to find slug for {input.TravelTimeID}");
                 return;
             }
 
+            this.Logger.LogDebug($"Started publishing data for slug {slug}");
             await Task.WhenAll(
                 this.PublishAsync(this.StateTopic(slug), input.CurrentTime.ToString())
             );
+            this.Logger.LogDebug($"Finished publishing data for slug {slug}");
         }
 
         /// <inheritdoc />
@@ -71,6 +75,7 @@ namespace WSDOT.Managers
             {
                 foreach (var map in mapping)
                 {
+                    this.Logger.LogDebug($"Generating discovery for {input.TravelTimeID} - {map.Sensor}");
                     var discovery = this.BuildDiscovery(input.Slug, map.Sensor, assembly, false);
                     discovery.Icon = "mdi:car";
                     discovery.UnitOfMeasurement = "min";

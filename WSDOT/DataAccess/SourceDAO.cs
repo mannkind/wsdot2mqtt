@@ -61,12 +61,14 @@ namespace WSDOT.DataAccess
         private async Task<Models.SourceManager.FetchResponse?> FetchAsync(long timeTravelId,
             CancellationToken cancellationToken = default)
         {
+            this.Logger.LogDebug($"Started finding {timeTravelId} from WSDOT");
             var baseUrl = "https://www.wsdot.wa.gov/Traffic/api/TravelTimes/TravelTimesREST.svc/GetTravelTimeAsJson";
             var query = $"AccessCode={this.ApiKey}&TravelTimeID={timeTravelId}";
             var resp = await this.Client.GetAsync($"{baseUrl}?{query}", cancellationToken);
             resp.EnsureSuccessStatusCode();
             var content = await resp.Content.ReadAsStringAsync();
             var obj = JsonConvert.DeserializeObject<Models.SourceManager.FetchResponse>(content);
+            this.Logger.LogDebug($"Finished finding {timeTravelId} from WSDOT");
 
             return obj;
         }
