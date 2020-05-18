@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using TwoMQTT.Core;
 using TwoMQTT.Core.DataAccess;
 using TwoMQTT.Core.Extensions;
@@ -31,12 +33,16 @@ namespace WSDOT
             var sinkSect = hostContext.Configuration.GetSection(Models.SinkManager.Opts.Section);
 
             services.AddHttpClient<IHTTPSourceDAO<SlugMapping, Command, Models.SourceManager.FetchResponse, object>>();
-            services.AddTransient<IHTTPSourceDAO<SlugMapping, Command, Models.SourceManager.FetchResponse, object>, SourceDAO>();
 
             return services
                 .Configure<Models.Shared.Opts>(sharedSect)
                 .Configure<Models.SourceManager.Opts>(sourceSect)
                 .Configure<Models.SinkManager.Opts>(sinkSect)
+                .AddTransient<IHTTPSourceDAO<SlugMapping, Command, Models.SourceManager.FetchResponse, object>>(x =>
+                {
+                    var opts = x.GetService<IOptions<Models.SourceManager.Opts>>();
+                    return new SourceDAO(x.GetService<ILogger<SourceDAO>>(), x.GetService<IHttpClientFactory>(), opts.Value.ApiKey);
+                })
                 .ConfigureBidirectionalSourceSink<Resource, Command, SourceManager, SinkManager>();
         }
 

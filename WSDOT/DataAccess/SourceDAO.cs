@@ -3,7 +3,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using TwoMQTT.Core.DataAccess;
 using WSDOT.Models.Shared;
@@ -19,14 +18,13 @@ namespace WSDOT.DataAccess
         /// Initializes a new instance of the SourceDAO class.
         /// </summary>
         /// <param name="logger"></param>
-        /// <param name="opts"></param>
         /// <param name="httpClientFactory"></param>
+        /// <param name="apiKey"></param>
         /// <returns></returns>
-        public SourceDAO(ILogger<SourceDAO> logger, IOptions<Models.SourceManager.Opts> opts,
-            IHttpClientFactory httpClientFactory) :
+        public SourceDAO(ILogger<SourceDAO> logger, IHttpClientFactory httpClientFactory, string apiKey) :
             base(logger, httpClientFactory)
         {
-            this.ApiKey = opts.Value.ApiKey;
+            this.ApiKey = apiKey;
         }
 
         /// <inheritdoc />
