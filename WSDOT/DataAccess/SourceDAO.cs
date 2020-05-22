@@ -12,7 +12,7 @@ namespace WSDOT.DataAccess
     /// <summary>
     /// An class representing a managed way to interact with a source.
     /// </summary>
-    public class SourceDAO : HTTPSourceDAO<SlugMapping, Command, Models.SourceManager.FetchResponse, object>
+    public class SourceDAO : SourceDAO<SlugMapping, Command, Models.SourceManager.FetchResponse, object>
     {
         /// <summary>
         /// Initializes a new instance of the SourceDAO class.
@@ -22,9 +22,10 @@ namespace WSDOT.DataAccess
         /// <param name="apiKey"></param>
         /// <returns></returns>
         public SourceDAO(ILogger<SourceDAO> logger, IHttpClientFactory httpClientFactory, string apiKey) :
-            base(logger, httpClientFactory)
+            base(logger)
         {
             this.ApiKey = apiKey;
+            this.Client = httpClientFactory.CreateClient();
         }
 
         /// <inheritdoc />
@@ -49,6 +50,11 @@ namespace WSDOT.DataAccess
         /// The API Key to access the source.
         /// </summary>
         private readonly string ApiKey;
+
+        /// <summary>
+        /// The HTTP client used to access the source.
+        /// </summary>
+        private readonly HttpClient Client;
 
         /// <summary>
         /// Fetch one response from the source
