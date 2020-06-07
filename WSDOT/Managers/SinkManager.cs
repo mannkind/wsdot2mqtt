@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TwoMQTT.Core;
 using TwoMQTT.Core.Managers;
+using TwoMQTT.Core.Models;
 using WSDOT.Models.Shared;
 
 namespace WSDOT.Managers
@@ -57,14 +58,9 @@ namespace WSDOT.Managers
         }
 
         /// <inheritdoc />
-        protected override async Task HandleDiscoveryAsync(CancellationToken cancellationToken = default)
+        protected override IEnumerable<(string slug, string sensor, string type, MQTTDiscovery discovery)> Discoveries()
         {
-            if (!this.Opts.DiscoveryEnabled)
-            {
-                return;
-            }
-
-            var tasks = new List<Task>();
+            var discoveries = new List<(string, string, string, MQTTDiscovery)>();
             var assembly = Assembly.GetAssembly(typeof(Program))?.GetName() ?? new AssemblyName();
             var mapping = new[]
             {
@@ -79,11 +75,11 @@ namespace WSDOT.Managers
                     var discovery = this.BuildDiscovery(input.Slug, map.Sensor, assembly, false);
                     discovery.Icon = "mdi:car";
                     discovery.UnitOfMeasurement = "min";
-                    tasks.Add(this.PublishDiscoveryAsync(input.Slug, map.Sensor, map.Type, discovery, cancellationToken));
+                    discoveries.Add((input.Slug, map.Sensor, map.Type, discovery));
                 }
             }
 
-            await Task.WhenAll(tasks);
+            return discoveries;
         }
     }
 }
