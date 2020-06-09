@@ -6,6 +6,7 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MQTTnet.Extensions.ManagedClient;
 using TwoMQTT.Core;
 using TwoMQTT.Core.Managers;
 using TwoMQTT.Core.Models;
@@ -27,10 +28,9 @@ namespace WSDOT.Managers
         /// <param name="incomingData"></param>
         /// <param name="outgoingCommand"></param>
         /// <returns></returns>
-        public SinkManager(ILogger<SinkManager> logger, IOptions<Opts> sharedOpts,
-            IOptions<Models.SinkManager.Opts> opts, ChannelReader<Resource> incomingData,
-            ChannelWriter<Command> outgoingCommand) :
-            base(logger, opts, incomingData, outgoingCommand, sharedOpts.Value.Resources, string.Empty)
+        public SinkManager(ILogger<SinkManager> logger, IOptions<Opts> sharedOpts, IOptions<Models.SinkManager.Opts> opts,
+            IManagedMqttClient client, ChannelReader<Resource> incomingData, ChannelWriter<Command> outgoingCommand) :
+            base(logger, opts, client, incomingData, outgoingCommand, sharedOpts.Value.Resources, string.Empty)
         {
         }
 
