@@ -4,15 +4,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using TwoMQTT.Core.DataAccess;
 using WSDOT.Models.Shared;
+using WSDOT.Models.Source;
 
 namespace WSDOT.DataAccess
 {
+    public interface ISourceDAO
+    {
+        /// <summary>
+        /// Fetch one response from the source.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<FetchResponse?> FetchOneAsync(SlugMapping data, CancellationToken cancellationToken = default);
+    }
+
     /// <summary>
     /// An class representing a managed way to interact with a source.
     /// </summary>
-    public class SourceDAO : SourceDAO<SlugMapping, Command, Models.SourceManager.FetchResponse, object>
+    public class SourceDAO : ISourceDAO
     {
         /// <summary>
         /// Initializes a new instance of the SourceDAO class.
@@ -21,15 +32,15 @@ namespace WSDOT.DataAccess
         /// <param name="httpClientFactory"></param>
         /// <param name="apiKey"></param>
         /// <returns></returns>
-        public SourceDAO(ILogger<SourceDAO> logger, IHttpClientFactory httpClientFactory, string apiKey) :
-            base(logger)
+        public SourceDAO(ILogger<SourceDAO> logger, IHttpClientFactory httpClientFactory, string apiKey)
         {
+            this.Logger = logger;
             this.ApiKey = apiKey;
             this.Client = httpClientFactory.CreateClient();
         }
 
         /// <inheritdoc />
-        public override async Task<Models.SourceManager.FetchResponse?> FetchOneAsync(SlugMapping data,
+        public async Task<FetchResponse?> FetchOneAsync(SlugMapping data,
             CancellationToken cancellationToken = default)
         {
             try
@@ -47,12 +58,17 @@ namespace WSDOT.DataAccess
         }
 
         /// <summary>
+        /// The logger used internally.
+        /// </summary>
+        private readonly ILogger<SourceDAO> Logger;
+
+        /// <summary>
         /// The API Key to access the source.
         /// </summary>
         private readonly string ApiKey;
 
         /// <summary>
-        /// The HTTP client used to access the source.
+        /// The client used to access the source.
         /// </summary>
         private readonly HttpClient Client;
 
@@ -62,7 +78,7 @@ namespace WSDOT.DataAccess
         /// <param name="timeTravelId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task<Models.SourceManager.FetchResponse?> FetchAsync(long timeTravelId,
+        private async Task<FetchResponse?> FetchAsync(long timeTravelId,
             CancellationToken cancellationToken = default)
         {
             this.Logger.LogDebug($"Started finding {timeTravelId} from WSDOT");
@@ -71,7 +87,7 @@ namespace WSDOT.DataAccess
             var resp = await this.Client.GetAsync($"{baseUrl}?{query}", cancellationToken);
             resp.EnsureSuccessStatusCode();
             var content = await resp.Content.ReadAsStringAsync();
-            var obj = JsonConvert.DeserializeObject<Models.SourceManager.FetchResponse>(content);
+            var obj = JsonConvert.DeserializeObject<FetchResponse>(content);
             this.Logger.LogDebug($"Finished finding {timeTravelId} from WSDOT");
 
             return obj;
