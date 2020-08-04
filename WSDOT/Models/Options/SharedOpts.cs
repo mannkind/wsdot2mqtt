@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using WSDOT.Models.Shared;
 
-namespace WSDOT.Models.Shared
+namespace WSDOT.Models.Options
 {
     /// <summary>
     /// The shared options across the application
     /// </summary>
-    public class Opts
+    public class SharedOpts
     {
         public const string Section = "WSDOT";
 

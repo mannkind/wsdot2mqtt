@@ -1,11 +1,11 @@
 using System;
 
-namespace WSDOT.Models.SourceManager
+namespace WSDOT.Models.Options
 {
     /// <summary>
     /// The source options
     /// </summary>
-    public class Opts
+    public class SourceOpts
     {
         public const string Section = "WSDOT";
 

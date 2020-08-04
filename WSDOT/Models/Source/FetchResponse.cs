@@ -1,4 +1,4 @@
-namespace WSDOT.Models.SourceManager
+namespace WSDOT.Models.Source
 {
     /// <summary>
     /// The response from the source

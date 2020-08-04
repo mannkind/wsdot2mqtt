@@ -1,120 +1,62 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TwoMQTT.Core;
-using TwoMQTT.Core.DataAccess;
 using TwoMQTT.Core.Extensions;
+using TwoMQTT.Core.Interfaces;
+using TwoMQTT.Core.Utils;
 using WSDOT.DataAccess;
 using WSDOT.Managers;
 using WSDOT.Models.Shared;
 
-
 namespace WSDOT
 {
-    class Program : ConsoleProgram<Resource, Command, SourceManager, SinkManager>
+    class Program : ConsoleProgram<Resource, Command, SourceLiason, MQTTLiason>
     {
         static async Task Main(string[] args)
         {
             var p = new Program();
-            p.MapOldEnvVariables();
             await p.ExecuteAsync(args);
         }
 
-        protected override IServiceCollection ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
+        /// <inheritdoc />
+        protected override IDictionary<string, string> EnvironmentDefaults()
         {
-            services.AddHttpClient<ISourceDAO<SlugMapping, Command, Models.SourceManager.FetchResponse, object>>();
+            var sep = "__";
+            var section = Models.Options.MQTTOpts.Section.Replace(":", sep);
+            var sectsep = $"{section}{sep}";
 
-            return services
-                .ConfigureOpts<Models.Shared.Opts>(hostContext, Models.Shared.Opts.Section)
-                .ConfigureOpts<Models.SourceManager.Opts>(hostContext, Models.SourceManager.Opts.Section)
-                .ConfigureOpts<Models.SinkManager.Opts>(hostContext, Models.SinkManager.Opts.Section)
-                .AddTransient<ISourceDAO<SlugMapping, Command, Models.SourceManager.FetchResponse, object>, SourceDAO>(x =>
-                {
-                    var opts = x.GetService<IOptions<Models.SourceManager.Opts>>();
-                    return new SourceDAO(x.GetService<ILogger<SourceDAO>>(), x.GetService<IHttpClientFactory>(), opts.Value.ApiKey);
-                });
+            return new Dictionary<string, string>
+            {
+                { $"{sectsep}{nameof(Models.Options.MQTTOpts.TopicPrefix)}", Models.Options.MQTTOpts.TopicPrefixDefault },
+                { $"{sectsep}{nameof(Models.Options.MQTTOpts.DiscoveryName)}", Models.Options.MQTTOpts.DiscoveryNameDefault },
+            };
         }
 
-        [Obsolete("Remove in the near future.")]
-        private void MapOldEnvVariables()
+        /// <inheritdoc />
+        protected override IServiceCollection ConfigureServices(HostBuilderContext hostContext, IServiceCollection services)
         {
-            var found = false;
-            var foundOld = new List<string>();
-            var mappings = new[]
-            {
-                new { Src = "WSDOT_SECRET", Dst = "WSDOT__APIKEY", CanMap = true, Strip = "", Sep = "" },
-                new { Src = "WSDOT_TRAVELTIMEMAPPING", Dst = "WSDOT__RESOURCES", CanMap = true, Strip = "",  Sep = ":" },
-                new { Src = "WSDOT_LOOKUPINTERVAL", Dst = "WSDOT__POLLINGINTERVAL", CanMap = false, Strip = "", Sep = "" },
-                new { Src = "MQTT_TOPICPREFIX", Dst = "WSDOT__MQTT__TOPICPREFIX", CanMap = true, Strip = "", Sep = "" },
-                new { Src = "MQTT_DISCOVERY", Dst = "WSDOT__MQTT__DISCOVERYENABLED", CanMap = true, Strip = "", Sep = "" },
-                new { Src = "MQTT_DISCOVERYPREFIX", Dst = "WSDOT__MQTT__DISCOVERYPREFIX", CanMap = true, Strip = "", Sep = "" },
-                new { Src = "MQTT_DISCOVERYNAME", Dst = "WSDOT__MQTT__DISCOVERYNAME", CanMap = true, Strip = "", Sep = "" },
-                new { Src = "MQTT_BROKER", Dst = "WSDOT__MQTT__BROKER", CanMap = true, Strip = "tcp://", Sep = "" },
-                new { Src = "MQTT_USERNAME", Dst = "WSDOT__MQTT__USERNAME", CanMap = true, Strip = "", Sep = "" },
-                new { Src = "MQTT_PASSWORD", Dst = "WSDOT__MQTT__PASSWORD", CanMap = true, Strip = "", Sep = "" },
-            };
+            services.AddHttpClient<ISourceDAO>();
 
-            foreach (var mapping in mappings)
-            {
-                var old = Environment.GetEnvironmentVariable(mapping.Src);
-                if (string.IsNullOrEmpty(old))
+            return services
+                .ConfigureOpts<Models.Options.SharedOpts>(hostContext, Models.Options.SharedOpts.Section)
+                .ConfigureOpts<Models.Options.SourceOpts>(hostContext, Models.Options.SourceOpts.Section)
+                .ConfigureOpts<TwoMQTT.Core.Models.MQTTManagerOptions>(hostContext, Models.Options.MQTTOpts.Section)
+                .AddSingleton<IThrottleManager, ThrottleManager>(x =>
                 {
-                    continue;
-                }
-
-                found = true;
-                foundOld.Add($"{mapping.Src} => {mapping.Dst}");
-
-                if (!mapping.CanMap)
+                    var opts = x.GetService<IOptions<Models.Options.SourceOpts>>();
+                    return new ThrottleManager(opts.Value.PollingInterval);
+                })
+                .AddSingleton<ISourceDAO, SourceDAO>(x =>
                 {
-                    continue;
-                }
-
-                // Strip junk where possible
-                if (!string.IsNullOrEmpty(mapping.Strip))
-                {
-                    old = old.Replace(mapping.Strip, string.Empty);
-                }
-
-                // Simple
-                if (string.IsNullOrEmpty(mapping.Sep))
-                {
-                    Environment.SetEnvironmentVariable(mapping.Dst, old);
-                }
-                // Complex
-                else
-                {
-                    var resourceSlugs = old.Split(",");
-                    var i = 0;
-                    foreach (var resourceSlug in resourceSlugs)
-                    {
-                        var parts = resourceSlug.Split(mapping.Sep);
-                        var id = parts.Length >= 1 ? parts[0] : string.Empty;
-                        var slug = parts.Length >= 2 ? parts[1] : string.Empty;
-                        var idEnv = $"{mapping.Dst}__{i}__TravelTimeID";
-                        var slugEnv = $"{mapping.Dst}__{i}__Slug";
-                        Environment.SetEnvironmentVariable(idEnv, id);
-                        Environment.SetEnvironmentVariable(slugEnv, slug);
-                    }
-                }
-
-            }
-
-
-            if (found)
-            {
-                var loggerFactory = LoggerFactory.Create(builder => { builder.AddConsole(); });
-                var logger = loggerFactory.CreateLogger<Program>();
-                logger.LogWarning("Found old environment variables.");
-                logger.LogWarning($"Please migrate to the new environment variables: {(string.Join(", ", foundOld))}");
-                Thread.Sleep(5000);
-            }
+                    var opts = x.GetService<IOptions<Models.Options.SourceOpts>>();
+                    return new SourceDAO(x.GetService<ILogger<SourceDAO>>(), x.GetService<IHttpClientFactory>(), opts.Value.ApiKey);
+                });
         }
     }
 }
