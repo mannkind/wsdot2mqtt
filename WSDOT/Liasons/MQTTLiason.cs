@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MQTTnet.Extensions.ManagedClient;
 using TwoMQTT.Core;
 using TwoMQTT.Core.Interfaces;
 using TwoMQTT.Core.Models;
@@ -13,7 +10,7 @@ using TwoMQTT.Core.Utils;
 using WSDOT.Models.Options;
 using WSDOT.Models.Shared;
 
-namespace WSDOT.Managers
+namespace WSDOT.Liasons
 {
     /// <inheritdoc />
     public class MQTTLiason : IMQTTLiason<Resource, Command>
@@ -40,14 +37,14 @@ namespace WSDOT.Managers
                 .Select(x => x.Slug)
                 .FirstOrDefault() ?? string.Empty;
 
-            this.Logger.LogDebug($"Found slug {slug} for incoming data for {input.TravelTimeID}");
+            this.Logger.LogDebug("Found slug {slug} for incoming data for {ttid}", slug, input.TravelTimeID);
             if (string.IsNullOrEmpty(slug))
             {
-                this.Logger.LogDebug($"Unable to find slug for {input.TravelTimeID}");
+                this.Logger.LogDebug("Unable to find slug for {ttid}", input.TravelTimeID);
                 return results;
             }
 
-            this.Logger.LogDebug($"Found slug {slug} for incoming data for {input.TravelTimeID}");
+            this.Logger.LogDebug("Found slug {slug} for incoming data for {ttid}", slug, input.TravelTimeID);
             results.AddRange(new[]
                 {
                     (this.Generator.StateTopic(slug), input.CurrentTime.ToString()),
@@ -71,7 +68,7 @@ namespace WSDOT.Managers
             {
                 foreach (var map in mapping)
                 {
-                    this.Logger.LogDebug($"Generating discovery for {input.TravelTimeID} - {map.Sensor}");
+                    this.Logger.LogDebug("Generating discovery for {ttid} - {sensor}", input.TravelTimeID, map.Sensor);
                     var discovery = this.Generator.BuildDiscovery(input.Slug, map.Sensor, assembly, false);
                     discovery.Icon = "mdi:car";
                     discovery.UnitOfMeasurement = "min";
