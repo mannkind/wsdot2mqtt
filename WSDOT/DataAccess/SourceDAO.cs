@@ -88,7 +88,7 @@ namespace WSDOT.DataAccess
             resp.EnsureSuccessStatusCode();
             var content = await resp.Content.ReadAsStringAsync();
             var obj = JsonConvert.DeserializeObject<FetchResponse>(content);
-            this.Logger.LogDebug($"Finished finding {timeTravelId} from WSDOT");
+            this.Logger.LogDebug("Finished finding {ttid} from WSDOT", timeTravelId);
 
             return obj;
         }
