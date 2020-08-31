@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using TwoMQTT.Core;
 using TwoMQTT.Core.Extensions;
 using TwoMQTT.Core.Interfaces;
-using TwoMQTT.Core.Utils;
+using TwoMQTT.Core.Managers;
 using WSDOT.DataAccess;
 using WSDOT.Liasons;
 using WSDOT.Models.Shared;
@@ -50,12 +50,33 @@ namespace WSDOT
                 .AddSingleton<IThrottleManager, ThrottleManager>(x =>
                 {
                     var opts = x.GetService<IOptions<Models.Options.SourceOpts>>();
+                    if (opts == null)
+                    {
+                        throw new ArgumentException($"{nameof(opts.Value.PollingInterval)} is required for {nameof(ThrottleManager)}.");
+                    }
+
                     return new ThrottleManager(opts.Value.PollingInterval);
                 })
                 .AddSingleton<ISourceDAO, SourceDAO>(x =>
                 {
+                    var logger = x.GetService<ILogger<SourceDAO>>();
+                    var httpClientFactory = x.GetService<IHttpClientFactory>();
                     var opts = x.GetService<IOptions<Models.Options.SourceOpts>>();
-                    return new SourceDAO(x.GetService<ILogger<SourceDAO>>(), x.GetService<IHttpClientFactory>(), opts.Value.ApiKey);
+
+                    if (logger == null)
+                    {
+                        throw new ArgumentException($"{nameof(logger)} is required for {nameof(SourceDAO)}.");
+                    }
+                    if (httpClientFactory == null)
+                    {
+                        throw new ArgumentException($"{nameof(httpClientFactory)} is required for {nameof(SourceDAO)}.");
+                    }
+                    if (opts == null)
+                    {
+                        throw new ArgumentException($"{nameof(opts.Value.ApiKey)} are required for {nameof(SourceDAO)}.");
+                    }
+
+                    return new SourceDAO(logger, httpClientFactory, opts.Value.ApiKey);
                 });
         }
     }

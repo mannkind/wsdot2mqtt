@@ -39,7 +39,7 @@ namespace WSDOTTest.Liasons
                 });
 
                 sourceDAO.Setup(x => x.FetchOneAsync(test.Q, It.IsAny<CancellationToken>()))
-                     .ReturnsAsync(new WSDOT.Models.Source.FetchResponse
+                     .ReturnsAsync(new WSDOT.Models.Source.Response
                      {
                          TravelTimeID = test.Expected.TravelTimeID,
                          CurrentTime = test.Expected.CurrentTime,

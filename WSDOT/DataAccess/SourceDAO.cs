@@ -4,20 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using TwoMQTT.Core.Interfaces;
 using WSDOT.Models.Shared;
 using WSDOT.Models.Source;
 
 namespace WSDOT.DataAccess
 {
-    public interface ISourceDAO
+    public interface ISourceDAO : ISourceDAO<SlugMapping, Response, Command, object>
     {
-        /// <summary>
-        /// Fetch one response from the source.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<FetchResponse?> FetchOneAsync(SlugMapping data, CancellationToken cancellationToken = default);
     }
 
     /// <summary>
@@ -40,7 +34,7 @@ namespace WSDOT.DataAccess
         }
 
         /// <inheritdoc />
-        public async Task<FetchResponse?> FetchOneAsync(SlugMapping data,
+        public async Task<Response?> FetchOneAsync(SlugMapping data,
             CancellationToken cancellationToken = default)
         {
             try
@@ -78,7 +72,7 @@ namespace WSDOT.DataAccess
         /// <param name="timeTravelId"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task<FetchResponse?> FetchAsync(long timeTravelId,
+        private async Task<Response?> FetchAsync(long timeTravelId,
             CancellationToken cancellationToken = default)
         {
             this.Logger.LogDebug($"Started finding {timeTravelId} from WSDOT");
@@ -87,7 +81,7 @@ namespace WSDOT.DataAccess
             var resp = await this.Client.GetAsync($"{baseUrl}?{query}", cancellationToken);
             resp.EnsureSuccessStatusCode();
             var content = await resp.Content.ReadAsStringAsync();
-            var obj = JsonConvert.DeserializeObject<FetchResponse>(content);
+            var obj = JsonConvert.DeserializeObject<Response>(content);
             this.Logger.LogDebug("Finished finding {ttid} from WSDOT", timeTravelId);
 
             return obj;
