@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TwoMQTT.Core.Interfaces;
 using WSDOT.Models.Shared;
 
 namespace WSDOT.Models.Options
@@ -6,7 +7,7 @@ namespace WSDOT.Models.Options
     /// <summary>
     /// The shared options across the application
     /// </summary>
-    public class SharedOpts
+    public class SharedOpts : ISharedOpts<SlugMapping>
     {
         public const string Section = "WSDOT";
 
