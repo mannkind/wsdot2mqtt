@@ -16,7 +16,7 @@ namespace WSDOT.Liasons
     /// <summary>
     /// An class representing a managed way to interact with MQTT.
     /// </summary>
-    public class MQTTLiason : MQTTLiasonBase<Resource, Command, SlugMapping, SharedOpts>, IMQTTLiason<Resource, Command>
+    public class MQTTLiason : MQTTLiasonBase<Resource, object, SlugMapping, SharedOpts>, IMQTTLiason<Resource, object>
     {
         /// <summary>
         /// 
@@ -71,8 +71,12 @@ namespace WSDOT.Liasons
                 {
                     this.Logger.LogDebug("Generating discovery for {ttid} - {sensor}", input.TravelTimeID, map.Sensor);
                     var discovery = this.Generator.BuildDiscovery(input.Slug, map.Sensor, assembly, false);
-                    discovery.Icon = "mdi:car";
-                    discovery.UnitOfMeasurement = "min";
+                    discovery = discovery with
+                    {
+                        Icon = "mdi:car",
+                        UnitOfMeasurement = "min",
+                    };
+
                     discoveries.Add((input.Slug, map.Sensor, map.Type, discovery));
                 }
             }

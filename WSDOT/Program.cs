@@ -16,7 +16,7 @@ using WSDOT.Models.Shared;
 
 namespace WSDOT
 {
-    class Program : ConsoleProgram<Resource, Command, SourceLiason, MQTTLiason>
+    class Program : ConsoleProgram<Resource, object, SourceLiason, MQTTLiason>
     {
         static async Task Main(string[] args)
         {
