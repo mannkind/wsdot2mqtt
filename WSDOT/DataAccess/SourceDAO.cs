@@ -43,9 +43,12 @@ namespace WSDOT.DataAccess
             }
             catch (Exception e)
             {
-                var msg = e is HttpRequestException ? "Unable to fetch from the WSDOT API" :
-                          e is JsonException ? "Unable to deserialize response from the WSDOT API" :
-                          "Unable to send to the WSDOT API";
+                var msg = e switch
+                {
+                    HttpRequestException => "Unable to fetch from the WSDOT API",
+                    JsonException => "Unable to deserialize response from the WSDOT API",
+                    _ => "Unable to send to the WSDOT API"
+                };
                 this.Logger.LogError(msg, e);
                 return null;
             }
