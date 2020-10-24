@@ -2,8 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using TwoMQTT.Core.Interfaces;
-using TwoMQTT.Core.Liasons;
+using TwoMQTT.Interfaces;
+using TwoMQTT.Liasons;
 using WSDOT.DataAccess;
 using WSDOT.Models.Options;
 using WSDOT.Models.Shared;
@@ -35,23 +35,18 @@ namespace WSDOT.Liasons
         protected override async Task<Resource?> FetchOneAsync(SlugMapping key, CancellationToken cancellationToken)
         {
             var result = await this.SourceDAO.FetchOneAsync(key, cancellationToken);
-            var resp = result != null ? this.MapData(result) : null;
-            return resp;
-        }
-
-        /// <summary>
-        /// Map the source response to a shared response representation.
-        /// </summary>
-        /// <param name="src"></param>
-        /// <returns></returns>
-        private Resource MapData(Response src) =>
-            new Resource
+            return result switch
             {
-                TravelTimeID = src.TravelTimeID,
-                Description = src.Description,
-                CurrentTime = src.CurrentTime,
-                Distance = src.Distance,
-                Closed = src.CurrentTime == 0,
+                Response => new Resource
+                {
+                    TravelTimeID = result.TravelTimeID,
+                    Description = result.Description,
+                    CurrentTime = result.CurrentTime,
+                    Distance = result.Distance,
+                    Closed = result.CurrentTime == 0,
+                },
+                _ => null,
             };
+        }
     }
 }

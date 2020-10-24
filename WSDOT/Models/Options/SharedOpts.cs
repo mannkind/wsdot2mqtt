@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using TwoMQTT.Core.Interfaces;
+using TwoMQTT.Interfaces;
 using WSDOT.Models.Shared;
 
 namespace WSDOT.Models.Options

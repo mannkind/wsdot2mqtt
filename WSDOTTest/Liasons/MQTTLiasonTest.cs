@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using TwoMQTT.Core.Utils;
+using TwoMQTT.Utils;
 using WSDOT.Liasons;
 using WSDOT.Models.Options;
 using WSDOT.Models.Shared;
@@ -39,7 +39,7 @@ namespace WSDOTTest.Liasons
                 });
 
                 generator.Setup(x => x.BuildDiscovery(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<System.Reflection.AssemblyName>(), false))
-                    .Returns(new TwoMQTT.Core.Models.MQTTDiscovery());
+                    .Returns(new TwoMQTT.Models.MQTTDiscovery());
                 generator.Setup(x => x.StateTopic(test.Q.Slug, It.IsAny<string>()))
                     .Returns($"totes/{test.Q.Slug}/topic/{nameof(Resource.CurrentTime)}");
 
@@ -77,7 +77,7 @@ namespace WSDOTTest.Liasons
                 });
 
                 generator.Setup(x => x.BuildDiscovery(test.Q.Slug, It.IsAny<string>(), It.IsAny<System.Reflection.AssemblyName>(), false))
-                    .Returns(new TwoMQTT.Core.Models.MQTTDiscovery());
+                    .Returns(new TwoMQTT.Models.MQTTDiscovery());
 
                 var mqttLiason = new MQTTLiason(logger.Object, generator.Object, sharedOpts);
                 var results = mqttLiason.Discoveries();

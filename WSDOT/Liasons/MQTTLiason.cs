@@ -3,11 +3,11 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using TwoMQTT.Core;
-using TwoMQTT.Core.Interfaces;
-using TwoMQTT.Core.Liasons;
-using TwoMQTT.Core.Models;
-using TwoMQTT.Core.Utils;
+using TwoMQTT;
+using TwoMQTT.Interfaces;
+using TwoMQTT.Liasons;
+using TwoMQTT.Models;
+using TwoMQTT.Utils;
 using WSDOT.Models.Options;
 using WSDOT.Models.Shared;
 

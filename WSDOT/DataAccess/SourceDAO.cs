@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using TwoMQTT.Core.Interfaces;
+using TwoMQTT.Interfaces;
 using WSDOT.Models.Shared;
 using WSDOT.Models.Source;
 
