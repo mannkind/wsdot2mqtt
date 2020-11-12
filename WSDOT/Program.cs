@@ -6,17 +6,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using TwoMQTT.Core;
-using TwoMQTT.Core.Extensions;
-using TwoMQTT.Core.Interfaces;
-using TwoMQTT.Core.Managers;
+using TwoMQTT;
+using TwoMQTT.Extensions;
+using TwoMQTT.Interfaces;
+using TwoMQTT.Managers;
 using WSDOT.DataAccess;
 using WSDOT.Liasons;
 using WSDOT.Models.Shared;
 
 namespace WSDOT
 {
-    class Program : ConsoleProgram<Resource, Command, SourceLiason, MQTTLiason>
+    class Program : ConsoleProgram<Resource, object, SourceLiason, MQTTLiason>
     {
         static async Task Main(string[] args)
         {
@@ -46,7 +46,7 @@ namespace WSDOT
             return services
                 .ConfigureOpts<Models.Options.SharedOpts>(hostContext, Models.Options.SharedOpts.Section)
                 .ConfigureOpts<Models.Options.SourceOpts>(hostContext, Models.Options.SourceOpts.Section)
-                .ConfigureOpts<TwoMQTT.Core.Models.MQTTManagerOptions>(hostContext, Models.Options.MQTTOpts.Section)
+                .ConfigureOpts<TwoMQTT.Models.MQTTManagerOptions>(hostContext, Models.Options.MQTTOpts.Section)
                 .AddSingleton<IThrottleManager, ThrottleManager>(x =>
                 {
                     var opts = x.GetService<IOptions<Models.Options.SourceOpts>>();

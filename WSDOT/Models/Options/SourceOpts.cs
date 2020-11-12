@@ -5,7 +5,7 @@ namespace WSDOT.Models.Options
     /// <summary>
     /// The source options
     /// </summary>
-    public class SourceOpts
+    public record SourceOpts
     {
         public const string Section = "WSDOT";
 
@@ -13,12 +13,12 @@ namespace WSDOT.Models.Options
         /// 
         /// </summary>
         /// <value></value>
-        public string ApiKey { get; set; } = string.Empty;
+        public string ApiKey { get; init; } = string.Empty;
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public TimeSpan PollingInterval { get; set; } = new TimeSpan(0, 3, 31);
+        public TimeSpan PollingInterval { get; init; } = new TimeSpan(0, 3, 31);
     }
 }

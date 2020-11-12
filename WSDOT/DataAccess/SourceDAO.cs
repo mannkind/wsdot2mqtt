@@ -4,13 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using TwoMQTT.Core.Interfaces;
+using TwoMQTT.Interfaces;
 using WSDOT.Models.Shared;
 using WSDOT.Models.Source;
 
 namespace WSDOT.DataAccess
 {
-    public interface ISourceDAO : ISourceDAO<SlugMapping, Response, Command, object>
+    public interface ISourceDAO : ISourceDAO<SlugMapping, Response, object, object>
     {
     }
 
@@ -43,9 +43,12 @@ namespace WSDOT.DataAccess
             }
             catch (Exception e)
             {
-                var msg = e is HttpRequestException ? "Unable to fetch from the WSDOT API" :
-                          e is JsonException ? "Unable to deserialize response from the WSDOT API" :
-                          "Unable to send to the WSDOT API";
+                var msg = e switch
+                {
+                    HttpRequestException => "Unable to fetch from the WSDOT API",
+                    JsonException => "Unable to deserialize response from the WSDOT API",
+                    _ => "Unable to send to the WSDOT API"
+                };
                 this.Logger.LogError(msg, e);
                 return null;
             }

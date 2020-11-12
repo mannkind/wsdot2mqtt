@@ -3,31 +3,31 @@ namespace WSDOT.Models.Source
     /// <summary>
     /// The response from the source
     /// </summary>
-    public class Response
+    public record Response
     {
         /// <summary>
         /// 
         /// </summary>
         /// <value></value>
-        public long CurrentTime { get; set; } = long.MinValue;
+        public long CurrentTime { get; init; } = long.MinValue;
 
         /// <summary>
         /// 
         /// </summary>
         /// <value></value>
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; init; } = string.Empty;
 
         /// <summary>
         /// 
         /// </summary>
         /// <value></value>
-        public double Distance { get; set; } = double.MinValue;
+        public double Distance { get; init; } = double.MinValue;
 
         /// <summary>
         /// 
         /// </summary>
         /// <value></value>
-        public long TravelTimeID { get; set; } = long.MinValue;
+        public long TravelTimeID { get; init; } = long.MinValue;
 
         /// <inheritdoc />
         public override string ToString() => $"Distance: {this.Distance} miles, Current Time: {this.CurrentTime} minutes";
