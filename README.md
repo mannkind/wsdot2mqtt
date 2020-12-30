@@ -1,9 +1,9 @@
 # wsdot2mqtt
 
 [![Software
-License](https://img.shields.io/badge/License-MIT-orange.svg?style=flat-square)](https://github.com/mannkind/wsdot2mqtt/blob/master/LICENSE.md)
+License](https://img.shields.io/badge/License-MIT-orange.svg?style=flat-square)](https://github.com/mannkind/wsdot2mqtt/blob/main/LICENSE.md)
 [![Build Status](https://github.com/mannkind/wsdot2mqtt/workflows/Main%20Workflow/badge.svg)](https://github.com/mannkind/wsdot2mqtt/actions)
-[![Coverage Status](https://img.shields.io/codecov/c/github/mannkind/wsdot2mqtt/master.svg)](http://codecov.io/github/mannkind/wsdot2mqtt?branch=master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/mannkind/wsdot2mqtt/main.svg)](http://codecov.io/github/mannkind/wsdot2mqtt?branch=main)
 
 An experiment to publish WSDOT Travel Times to MQTT.
 
