@@ -16,8 +16,5 @@ namespace WSDOT.Models.Shared
         /// </summary>
         /// <value></value>
         public string Slug { get; init; } = string.Empty;
-
-        /// <inheritdoc />
-        public override string ToString() => $"Time Travel ID: {this.TravelTimeID}, Slug: {this.Slug}";
     }
 }

@@ -28,8 +28,5 @@ namespace WSDOT.Models.Source
         /// </summary>
         /// <value></value>
         public long TravelTimeID { get; init; } = long.MinValue;
-
-        /// <inheritdoc />
-        public override string ToString() => $"Distance: {this.Distance} miles, Current Time: {this.CurrentTime} minutes";
     }
 }

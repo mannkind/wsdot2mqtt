@@ -19,6 +19,6 @@ namespace WSDOT.Models.Options
         /// 
         /// </summary>
         /// <returns></returns>
-        public TimeSpan PollingInterval { get; init; } = new TimeSpan(0, 3, 31);
+        public TimeSpan PollingInterval { get; init; } = new(0, 3, 31);
     }
 }
