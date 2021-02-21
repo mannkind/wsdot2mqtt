@@ -34,8 +34,5 @@ namespace WSDOT.Models.Shared
         /// </summary>
         /// <value></value>
         public bool Closed { get; init; } = false;
-
-        /// <inheritdoc />
-        public override string ToString() => $"Description: {this.Description}, Distance: {this.Distance} miles, Current Time: {this.CurrentTime} minutes";
     }
 }
