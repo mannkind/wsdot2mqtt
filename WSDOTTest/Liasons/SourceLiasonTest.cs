@@ -46,7 +46,7 @@ namespace WSDOTTest.Liasons
                      });
 
                 var sourceLiason = new SourceLiason(logger.Object, sourceDAO.Object, opts, sharedOpts);
-                await foreach (var result in sourceLiason.FetchAllAsync())
+                await foreach (var result in sourceLiason.ReceiveDataAsync())
                 {
                     Assert.AreEqual(test.Expected.TravelTimeID, result.TravelTimeID);
                     Assert.AreEqual(test.Expected.CurrentTime, result.CurrentTime);

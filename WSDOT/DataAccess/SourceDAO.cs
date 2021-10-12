@@ -10,7 +10,7 @@ using WSDOT.Models.Source;
 
 namespace WSDOT.DataAccess
 {
-    public interface ISourceDAO : ISourceDAO<SlugMapping, Response, object, object>
+    public interface ISourceDAO : IPollingSourceDAO<SlugMapping, Response, object, object>
     {
     }
 
