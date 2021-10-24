@@ -1,14 +1,13 @@
 using TwoMQTT.Models;
 
-namespace WSDOT.Models.Options
+namespace WSDOT.Models.Options;
+
+/// <summary>
+/// The sink options
+/// </summary>
+public record MQTTOpts : MQTTManagerOptions
 {
-    /// <summary>
-    /// The sink options
-    /// </summary>
-    public record MQTTOpts : MQTTManagerOptions
-    {
-        public const string Section = "WSDOT:MQTT";
-        public const string TopicPrefixDefault = "home/wsdot";
-        public const string DiscoveryNameDefault = "wsdot";
-    }
+    public const string Section = "WSDOT:MQTT";
+    public const string TopicPrefixDefault = "home/wsdot";
+    public const string DiscoveryNameDefault = "wsdot";
 }
